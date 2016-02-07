@@ -8,7 +8,7 @@ package maf.bdmem;
 import java.util.Objects;
 
 /**
- * Representa una tupla para almacenar registros en una Base de Datos en Memoria
+ * Representa un registro para almacenar datos en una Base de Datos en Memoria
  *
  * @author Martín Alejandro Fernández
  * <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
@@ -19,8 +19,8 @@ public class Registro {
 
     //<editor-fold defaultstate="collapsed" desc="Miembros">
     private int id;
-    private String tabla;
-    private Object registro;
+    private String sNombreTabla;
+    private Object oDatos;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructores">
@@ -28,7 +28,6 @@ public class Registro {
     }
 
     //</editor-fold>
-    
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public int getId() {
         return id;
@@ -38,34 +37,32 @@ public class Registro {
         this.id = id;
     }
 
-    public String getTabla() {
-        return tabla;
+    public String getSNombreTabla() {
+        return sNombreTabla;
     }
 
-    public void setTabla(String tabla) {
-        this.tabla = tabla;
+    public void setSNombreTabla(String sNombreTabla) {
+        this.sNombreTabla = sNombreTabla;
     }
 
-    public Object getRegistro() {
-        return registro;
+    public Object getODatos() {
+        return oDatos;
     }
 
-    public void setRegistro(Object registro) {
-        this.registro = registro;
+    public void setODatos(Object oDatos) {
+        this.oDatos = oDatos;
     }
 
     /**
      * Método sobreescrito para poder determinar la igualdad de dos objetos de
      * tipo {@link maf.bdmem.Registro}. Se compara un código hash generado a
      * partir de los valores de los miembros {@link maf.bdmem.Registro#id}, y
-     * {@link maf.bdmem.Registro#tabla}
+     * {@link maf.bdmem.Registro#sNombreTabla}
      *
      * @param obj Es el Objeto a ser comparado
      * @return VERDADERO - Si los códigos hash son idénticos, caso contrario
      * devuelve FALSO
      * @see maf.bdmem.Registro#hashCode()
-     * @author Martín Alejandro Fernández
-     * @version 1.0
      * @see <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
      */
     @Override
@@ -80,20 +77,17 @@ public class Registro {
     /**
      * Método sobreescrito para generar un código hash a partir de los valores
      * de los miembros {@link maf.bdmem.Registro#id}, y
-     * {@link maf.bdmem.Registro#tabla}
+     * {@link maf.bdmem.Registro#sNombreTabla}
      *
      * @return Entero que representa un código hash
-     * @author Martín Alejandro Fernández
-     * @version 1.0
      * @see <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
      */
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 17 * hash + Objects.hashCode(this.tabla);
+        hash = 17 * hash + Objects.hashCode(this.sNombreTabla);
         hash = 17 * hash + Objects.hashCode(this.id);
         return hash;
     }
     //</editor-fold>
-
 }

@@ -9,31 +9,37 @@ import java.util.ArrayList;
 
 /**
  * <b>Base de Datos en Memoria:</b><br>
- * Simula una base de datos en memoria usando un {@link ArrayList} para 
- * almacenar las tuplas que son del tipo {@link maf.bdmem.Registro}<br>
+ * Simula una base de datos en memoria usando un {@link ArrayList} para
+ * almacenar los datos del tipo {@link maf.bdmem.Registro}<br>
  * <p>
  * <b>Modo de uso:</b><br>
- * Para poder usar la base de datos primero se deberá establecer una "conección"
+ * Para poder usar la base de datos primero se deberá establecer una "conexión"
  * usando el método {@link maf.bdmem.BDEnMemoria#conectar()
  * conectar} y así obtener una instancia de la base de datos para poder
- * utilizarla.<br>
- * <b>Ejemplo:</b><br>
- * <pre> 
- * {@code BDEnMemoria miBD = BDEnMemoria.conectar();
- *  int n = miBD.getNumeroDeRegistros();
- *  System.out.println(String.valueOf(n) + " registros ingresados en la Base de Datos");}
+ * utilizarla. Como se usa el patròn de diseño "Singlenton", siempre se accede a
+ * una única instancia de la Base de Datos<br><br>
+ * <b>Ejemplo:</b>
+ * <pre>
+ * {@code
+ *  //Conectamos con la BD
+ * BDEnMemoria miBD = BDEnMemoria.conectar();
+ * //Le pedimos a la BD la cantidad de registros almacenados
+ * int n = miBD.getNumeroDeRegistros();
+ * //Mostramos por pantalla
+ * System.out.println(String.valueOf(n) + " registros ingresados en la Base de Datos");
+ * }
  * </pre>
- * <p>
- * <b>Comandos DDL (Data Definition Lenguaje) incluidos:</b></p>
+ * <b>Comandos incluidos:</b>
+ * <ul>
+ * <li><b>Comandos DDL (Data Definition Lenguaje):</b>
  * <ul>
  * <li>
  * Borrar Todos los Registros (Drop Data
  * Base):{@link maf.bdmem.BDEnMemoria#borrarTodo() borrarTodo()}
  * </li>
  * </ul>
- *
- * <p>
- * <b>Comandos DML (Data Manipulation Lenguaje) incluidos:</b></p>
+ * </li>
+ * <li><b>Comandos DML (Data Manipulation Lenguaje):</b>
  * <ul>
  * <li>
  * Alta (insert):
@@ -58,12 +64,12 @@ import java.util.ArrayList;
  * <ul>
  * <li>{@link maf.bdmem.BDEnMemoria#seleccionar(String, int) seleccionar(String,int)}</li>
  * <li>{@link maf.bdmem.BDEnMemoria#seleccionarTodos(String) seleccionarTodos(String)}</li>
- * <li>{@link maf.bdmem.BDEnMemoria#seleccionarTodosLosRegistros(String) seleccionarTodosLosRegistros(String)}</li>
+ * <li>{@link maf.bdmem.BDEnMemoria#seleccionar(String) seleccionar(String)}</li>
  * </ul>
  * </li>
  * </ul>
- * <p>
- * <b>Comandos para estadísticas incluidos:</b></p>
+ * </li>
+ * <li><b>Comandos para estadísticas:</b>
  * <ul>
  * <li>
  * N° de Registros
@@ -74,6 +80,8 @@ import java.util.ArrayList;
  * registradas:{@link maf.bdmem.BDEnMemoria#getNumeroDeTablas() getNumeroDeTablas()}
  * </li>
  * </ul>
+ * </li>
+ * </ul>
  *
  * @author Martín Alejandro Fernández
  * @version 1.0
@@ -81,26 +89,43 @@ import java.util.ArrayList;
  */
 public class BDEnMemoria {
 
+    //<editor-fold defaultstate="collapsed" desc="Variables y Constantes de tipo "static">
     public static final String OPERACION_OK = "La operación se completó "
             + "con exito";
     public static final String OPERACION_ERROR = "La operación no se "
             + "completó con exito";
     public static final String OPERACION_INVALIDA = "La operación es inválida";
-
-    //<editor-fold defaultstate="collapsed" desc="Miembros">
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Atributos">
+    /**
+     * Instancia única de la Base de Datos
+     *
+     * @see maf.bdmem.BDEnMemoria
+     */
     public static BDEnMemoria instancia = null;
-    ArrayList<Registro> tuplasRegistros;
-    ArrayList<Registro> resultados;
+    /**
+     * ArrayList que contiene todos los datos de la Base de Datos
+     *
+     * @see maf.bdmem.BDEnMemoria
+     */
+    ArrayList<Registro> metaBaseDeDatos;
+    /**
+     * ArrayList que simula, pero sin MetaDatos un ResultSet
+     *
+     * @see java.sql.ResultSet
+     */
+    ArrayList<Registro> metaResultSet;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructores">
     /**
-     * Crea una instancia unica de la Base de Datos en Memoria
+     * Crea una instancia única de la Base de Datos en Memoria
      *
      * @see maf.bdmem.BDEnMemoria
      * @return Una nueva instancia de la Base de Datos en Memoria
      */
-    public static final BDEnMemoria conectar() {
+    public static BDEnMemoria conectar() {
         if (BDEnMemoria.instancia == null) {
             BDEnMemoria.instancia = new BDEnMemoria();
         }
@@ -113,92 +138,95 @@ public class BDEnMemoria {
      * @see maf.bdmem.BDEnMemoria
      */
     private BDEnMemoria() {
-        this.tuplasRegistros = new ArrayList();
-        this.resultados = new ArrayList();
+        this.metaBaseDeDatos = new ArrayList<Registro>();
+        this.metaResultSet = new ArrayList<Registro>();
     }
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     /**
      * Elimina todos los registros de la Base de Datos en Memoria, destruyendo
-     * la referencia a las tuplas
+     * la referencia a los datos
      *
      * @see maf.bdmem.BDEnMemoria
      */
     public void borrarTodo() {
-        this.tuplasRegistros = null;
+        this.metaBaseDeDatos = null;
     }
 
     /**
      * Inserta un Objeto a la Base de Datos en Memoria
      *
-     * @param o Es el objeto a insertar en la Base de Datos en Memoria
+     * @see maf.bdmem.BDEnMemoria
+     * @param obj Es el objeto a insertar en la Base de Datos en Memoria
      * @return Retorna una cadena indicando el resultado de la operación
      */
-    public String insertar(Object o) {
-        if (tuplasRegistros == null || tuplasRegistros.isEmpty()) {
-            tuplasRegistros = new ArrayList<>();
+    public String insertar(Object obj) {
+        if (metaBaseDeDatos == null || metaBaseDeDatos.isEmpty()) {
+            metaBaseDeDatos = new ArrayList<>();
         }
         Registro r = new Registro();
-        r.setRegistro(o);
-        r.setId(tuplasRegistros.size());
-        r.setTabla(String.valueOf(o.getClass().getSimpleName().toLowerCase()));
-        tuplasRegistros.add(r);
-        return BDEnMemoria.OPERACION_OK + " (" + "Insert de " + o.getClass().getSimpleName() + ")";
+        r.setODatos(obj);
+        r.setId(metaBaseDeDatos.size());
+        r.setSNombreTabla(String.valueOf(obj.getClass().getSimpleName().toLowerCase()));
+        metaBaseDeDatos.add(r);
+        return BDEnMemoria.OPERACION_OK + " (" + "Insert de " + obj.getClass().getSimpleName() + ")";
     }
 
     /**
      * Borra un Objeto de la Base de Datos en Memoria
      *
-     * @param o Es el objeto a borrar de la Base de Datos en Memoria
+     * @see maf.bdmem.BDEnMemoria
+     * @param obj Es el objeto a borrar de la Base de Datos en Memoria
      * @param id Es el identificador del objeto a borrar de la Base de Datos en
      * Memoria
      * @return Retorna una cadena indicando el resultado de la operación
      */
-    public String borrar(Object o, int id) {
-        Registro r = this.buscar(o, id);
+    public String borrar(Object obj, int id) {
+        Registro r = this.buscar(obj, id);
         if (r != null) {
-            this.tuplasRegistros.remove(r.getId());
-            return BDEnMemoria.OPERACION_OK + " (" + "DELETE de " + o.getClass().getSimpleName() + ")";
+            this.metaBaseDeDatos.remove(r.getId());
+            return BDEnMemoria.OPERACION_OK + " (" + "DELETE de " + obj.getClass().getSimpleName() + ")";
         }
-        return BDEnMemoria.OPERACION_ERROR + " (" + "DELETE de " + o.getClass().getSimpleName() + ")";
+        return BDEnMemoria.OPERACION_ERROR + " (" + "DELETE de " + obj.getClass().getSimpleName() + ")";
     }
 
     /**
      * Modifica un Objeto de la Base de Datos en Memoria
      *
-     * @param o Es el objeto a modificar de la Base de Datos en Memoria
+     * @see maf.bdmem.BDEnMemoria
+     * @param obj Es el objeto a modificar de la Base de Datos en Memoria
      * @param id Es el identificador del objeto a modificar de la Base de Datos
      * en Memoria
      * @return Retorna una cadena indicando el resultado de la operación
      */
-    public String modificar(Object o, int id) {
-        Registro r = this.buscar(o, id);
+    public String modificar(Object obj, int id) {
+        Registro r = this.buscar(obj, id);
         if (r != null) {
-            this.tuplasRegistros.set(r.getId(), r);
-            return BDEnMemoria.OPERACION_OK + " (" + "UPDATE de " + o.getClass().getSimpleName() + ")";
+            this.metaBaseDeDatos.set(r.getId(), r);
+            return BDEnMemoria.OPERACION_OK + " (" + "UPDATE de " + obj.getClass().getSimpleName() + ")";
         }
-        return BDEnMemoria.OPERACION_ERROR + " (" + "UPDATE de " + o.getClass().getSimpleName() + ")";
+        return BDEnMemoria.OPERACION_ERROR + " (" + "UPDATE de " + obj.getClass().getSimpleName() + ")";
     }
 
     /**
      * Busca un Objeto de la Base de Datos en Memoria
      *
-     * @param o Es el objeto a buscar de la Base de Datos en Memoria
+     * @param obj Es el objeto a buscar de la Base de Datos en Memoria
      * @param id Es el identificador del objeto a buscar de la Base de Datos en
      * Memoria
      * @return Retorna un objeto de tipo {@link maf.bdmem.Registro}
      * @see maf.bdmem.BDEnMemoria
      * @see maf.bdmem.Registro
      */
-    private Registro buscar(Object o, int id) {
+    private Registro buscar(Object obj, int id) {
         Registro r = new Registro();
-        r.setRegistro(o);
+        r.setODatos(obj);
         r.setId(id);
-        r.setTabla(String.valueOf(o.getClass().getSimpleName().toLowerCase()));
-        if (tuplasRegistros != null && !tuplasRegistros.isEmpty()) {
-            for (int i = 0; i < tuplasRegistros.size(); i++) {
-                if (tuplasRegistros.get(i).equals(r)) {
+        r.setSNombreTabla(String.valueOf(obj.getClass().getSimpleName().toLowerCase()));
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
+                if (metaBaseDeDatos.get(i).equals(r)) {
                     return r;
                 }
             }
@@ -210,21 +238,22 @@ public class BDEnMemoria {
      * Busca un Objeto de la Base de Datos en Memoria, usando el nombre de una
      * tabla
      *
-     * @param tabla Es una cadena que representa el nombre de la tabla (o grupo)
-     * de tuplas
+     * @see maf.bdmem.BDEnMemoria
+     * @param sNombreTabla Es una cadena que representa el nombre de la tabla (o
+     * grupo) de tuplas
      * @param id Es el identificador del objeto a buscar de la Base de Datos en
      * Memoria
      * @return Retorna un objeto de tipo {@link Object}
      */
-    public Object seleccionar(String tabla, int id) {
+    public Object seleccionar(String sNombreTabla, int id) {
         Registro r = new Registro();
-        r.setRegistro(null);
-        r.setTabla(tabla.toLowerCase());
+        r.setODatos(null);
+        r.setSNombreTabla(sNombreTabla.toLowerCase());
         r.setId(id);
-        if (tuplasRegistros != null && !tuplasRegistros.isEmpty()) {
-            for (int i = 0; i < tuplasRegistros.size(); i++) {
-                if (tuplasRegistros.get(i).equals(r)) {
-                    return tuplasRegistros.get(i).getRegistro();
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
+                if (metaBaseDeDatos.get(i).equals(r)) {
+                    return metaBaseDeDatos.get(i).getODatos();
                 }
             }
         }
@@ -235,25 +264,27 @@ public class BDEnMemoria {
      * Busca todos los Objetos de la Base de Datos en Memoria, usando el nombre
      * de una tabla
      *
-     * @param tabla Es una cadena que representa el nombre de la tabla (o grupo)
-     * de tuplas
+     * @see maf.bdmem.BDEnMemoria
+     * @see maf.bdmem.Registro
+     * @param sNombreTabla Es una cadena que representa el nombre de la tabla (o
+     * grupo) de tuplas
      * @return Retorna un ArrayList con objetos de tipo
      * {@link maf.bdmem.Registro}
      */
-    public ArrayList<Registro> seleccionarTodos(String tabla) {
-        this.resultados = null;
-        this.resultados = new ArrayList();
-        if (tuplasRegistros != null && !tuplasRegistros.isEmpty()) {
-            for (int i = 0; i < tuplasRegistros.size(); i++) {
+    public ArrayList<Registro> seleccionarTodos(String sNombreTabla) {
+        this.metaResultSet = null;
+        this.metaResultSet = new ArrayList<Registro>();
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
                 Registro r = new Registro();
-                r.setTabla(tabla.toLowerCase());
-                if (tuplasRegistros.get(i).getTabla().equals(r.getTabla())) {
-                    r.setRegistro(tuplasRegistros.get(i).getRegistro());
-                    r.setId(tuplasRegistros.get(i).getId());
-                    this.resultados.add(r);
+                r.setSNombreTabla(sNombreTabla.toLowerCase());
+                if (metaBaseDeDatos.get(i).getSNombreTabla().equals(r.getSNombreTabla())) {
+                    r.setODatos(metaBaseDeDatos.get(i).getODatos());
+                    r.setId(metaBaseDeDatos.get(i).getId());
+                    this.metaResultSet.add(r);
                 }
             }
-            return this.resultados;
+            return this.metaResultSet;
         }
         return null;
     }
@@ -262,18 +293,19 @@ public class BDEnMemoria {
      * Busca todos los Objetos de la Base de Datos en Memoria, usando el nombre
      * de una tabla
      *
-     * @param tabla Es una cadena que representa el nombre de la tabla (o grupo)
-     * de tuplas
+     * @see maf.bdmem.BDEnMemoria
+     * @param sNombreTabla Es una cadena que representa el nombre de la tabla (o
+     * grupo) de registros.
      * @return Retorna un ArrayList con objetos de tipo {@link Object}
      */
-    public ArrayList<Object> seleccionarTodosLosRegistros(String tabla) {
-        ArrayList ret = new ArrayList();
-        if (tuplasRegistros != null && !tuplasRegistros.isEmpty()) {
-            for (int i = 0; i < tuplasRegistros.size(); i++) {
+    public ArrayList<Object> seleccionar(String sNombreTabla) {
+        ArrayList<Object> ret = new ArrayList<Object>();
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
                 Registro r = new Registro();
-                r.setTabla(tabla.toLowerCase());
-                if (tuplasRegistros.get(i).getTabla().equals(r.getTabla())) {
-                    ret.add(tuplasRegistros.get(i).getRegistro());
+                r.setSNombreTabla(sNombreTabla.toLowerCase());
+                if (metaBaseDeDatos.get(i).getSNombreTabla().equals(r.getSNombreTabla())) {
+                    ret.add(metaBaseDeDatos.get(i).getODatos());
                 }
             }
             return ret;
@@ -289,7 +321,7 @@ public class BDEnMemoria {
      * Datos.
      */
     public int getNumeroDeRegistros() {
-        return this.tuplasRegistros.size();
+        return this.metaBaseDeDatos.size();
     }
 
     /**
@@ -300,17 +332,16 @@ public class BDEnMemoria {
      * Base de Datos.
      */
     public int getNumeroDeTablas() {
-        ArrayList<String> sTablas = new ArrayList();
+        ArrayList<String> sNombreTablas = new ArrayList<String>();
 
-        if (tuplasRegistros != null && !tuplasRegistros.isEmpty()) {
-            for (int i = 0; i < tuplasRegistros.size(); i++) {
-                if (sTablas.isEmpty() || !sTablas.contains(tuplasRegistros.get(i).getTabla())) {
-                    sTablas.add(tuplasRegistros.get(i).getTabla());
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
+                if (sNombreTablas.isEmpty() || !sNombreTablas.contains(metaBaseDeDatos.get(i).getSNombreTabla())) {
+                    sNombreTablas.add(metaBaseDeDatos.get(i).getSNombreTabla());
                 }
             }
         }
-        return sTablas.size();
+        return sNombreTablas.size();
     }
-
     //</editor-fold>
 }
