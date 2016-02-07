@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * Para poder usar la base de datos primero se deberá establecer una "conexión"
  * usando el método {@link maf.bdmem.BDEnMemoria#conectar()
  * conectar} y así obtener una instancia de la base de datos para poder
- * utilizarla. Como se usa el patròn de diseño "Singlenton", siempre se accede a
+ * utilizarla. Como se usa el patrón de diseño "Singlenton", siempre se accede a
  * una única instancia de la Base de Datos<br><br>
  * <b>Ejemplo:</b>
  * <pre>
