@@ -5,6 +5,8 @@
  */
 package maf.bdmem;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -21,6 +23,11 @@ public class Registro {
     private int id;
     private String sNombreTabla;
     private Object oDatos;
+    //MetaDatos
+    private int numeroColumnas=0;
+    private String[] nombreColumnas;
+    private Type[] tipoColumnas;
+    private Object[] valorColumnas;
     //</editor-fold>
 
     //<editor-fold defaultstate="collapsed" desc="Constructores">
@@ -46,11 +53,52 @@ public class Registro {
     }
 
     public Object getODatos() {
-        return oDatos;
+        if(this.oDatos!=null){
+            this.setMetaDatos(this.oDatos.getClass());
+        }
+        return this.oDatos;
     }
 
     public void setODatos(Object oDatos) {
         this.oDatos = oDatos;
+        if(this.oDatos!=null){
+            this.setMetaDatos(this.oDatos.getClass());
+        }
+ 
+    }
+
+    public int getNumeroColumnas() {
+        setMetaDatos(this.oDatos.getClass());
+        return this.numeroColumnas;
+    }
+
+    public String getNombreColumna(int idx) {
+        setMetaDatos(this.oDatos.getClass());
+        return this.nombreColumnas[idx];
+    }
+
+    public Object getValorObjeto(int idx) {
+        this.setMetaDatos(this.oDatos.getClass());
+        return this.valorColumnas[idx];
+    }
+
+    private void setMetaDatos(Class clase) {
+        Field atributos[] = clase.getDeclaredFields();
+
+        this.numeroColumnas = atributos.length;
+        this.nombreColumnas = new String[this.numeroColumnas];
+        this.tipoColumnas = new Type[this.numeroColumnas];
+        this.valorColumnas=new Object[this.numeroColumnas];
+        
+        for (int i = 0; i < atributos.length; i++) {
+            try {
+            atributos[i].setAccessible(true);
+            this.nombreColumnas[i] = atributos[i].getName();
+            this.tipoColumnas[i]=atributos[i].getGenericType();
+            this.valorColumnas[i]=atributos[i].get(this.oDatos);
+            } catch (IllegalArgumentException | IllegalAccessException | NullPointerException ex) {
+            }
+        }
     }
 
     /**

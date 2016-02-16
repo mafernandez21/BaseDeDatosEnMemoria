@@ -6,6 +6,8 @@
 package maf.bdmem;
 
 import java.util.ArrayList;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * <b>Base de Datos en Memoria:</b><br>
@@ -96,7 +98,7 @@ public class BDEnMemoria {
             + "completó con exito";
     public static final String OPERACION_INVALIDA = "La operación es inválida";
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="Atributos">
     /**
      * Instancia única de la Base de Datos
@@ -344,4 +346,32 @@ public class BDEnMemoria {
         return sNombreTablas.size();
     }
     //</editor-fold>
+
+    /**
+     * Método que convierte un grupo de Registros en una tabla
+     * @param tabla Tabla que mostrará los resultados
+     * @param registros Registros de tipo {@link maf.bdmem.Registro}, con los 
+     * datos a mostrar.
+     */
+    public static void registrosATabla(JTable tabla, ArrayList<Registro> registros) {
+        //Para establecer el modelo al JTable
+        DefaultTableModel modelo = new DefaultTableModel();
+        tabla.setModel(modelo);
+
+        int cantidadColumnas = registros.get(0).getNumeroColumnas();
+
+        //Establecer como cabezeras el nombre de las colimnas
+        for (int i = 0; i < cantidadColumnas; i++) {
+            modelo.addColumn(registros.get(0).getNombreColumna(i));
+        }
+
+        for (Registro r : registros) {
+            Object[] fila = new Object[cantidadColumnas];
+            for (int i = 0; i < cantidadColumnas; i++) {
+                fila[i] = r.getValorObjeto(i);
+
+            }
+            modelo.addRow(fila);
+        }
+    }
 }
