@@ -117,7 +117,8 @@ public class Registro {
     public boolean equals(Object obj) {
         if (obj instanceof Registro) {
             Registro r = (Registro) obj;
-            return this.hashCode() == r.hashCode();
+            this.getODatos().equals(obj);
+            return this.getODatos().equals(r.getODatos());
         }
         return false;
     }
