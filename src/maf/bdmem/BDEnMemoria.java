@@ -174,6 +174,22 @@ public class BDEnMemoria {
         metaBaseDeDatos.add(r);
         return BDEnMemoria.OPERACION_OK + " (" + "Insert de " + obj.getClass().getSimpleName() + ")";
     }
+    
+        /**
+     * Borra un Objeto de la Base de Datos en Memoria
+     *
+     * @see maf.bdmem.BDEnMemoria
+     * @param obj Es el objeto a borrar de la Base de Datos en Memoria
+     * @return Retorna una cadena indicando el resultado de la operación
+     */
+    public String borrar(Object obj) {
+        Registro r = this.buscar(obj);
+        if (r != null) {
+            this.metaBaseDeDatos.remove(r.getId());
+            return BDEnMemoria.OPERACION_OK + " (" + "DELETE de " + obj.getClass().getSimpleName() + ")";
+        }
+        return BDEnMemoria.OPERACION_ERROR + " (" + "DELETE de " + obj.getClass().getSimpleName() + ")";
+    }
 
     /**
      * Borra un Objeto de la Base de Datos en Memoria
@@ -211,6 +227,30 @@ public class BDEnMemoria {
         return BDEnMemoria.OPERACION_ERROR + " (" + "UPDATE de " + obj.getClass().getSimpleName() + ")";
     }
 
+    /**
+     * Busca un Objeto de la Base de Datos en Memoria
+     *
+     * @param obj Es el objeto a buscar de la Base de Datos en Memoria
+     * @return Retorna un objeto de tipo {@link maf.bdmem.Registro}
+     * @see maf.bdmem.BDEnMemoria
+     * @see maf.bdmem.Registro
+     */
+    private Registro buscar(Object obj) {
+        Registro r = new Registro();
+        r.setODatos(obj);
+        r.setSNombreTabla(String.valueOf(obj.getClass().getSimpleName().toLowerCase()));
+        if (metaBaseDeDatos != null && !metaBaseDeDatos.isEmpty()) {
+            for (int i = 0; i < metaBaseDeDatos.size(); i++) {
+                if (metaBaseDeDatos.get(i).equals(r)) {
+                    r.setId(i);
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
+
+    
     /**
      * Busca un Objeto de la Base de Datos en Memoria
      *
