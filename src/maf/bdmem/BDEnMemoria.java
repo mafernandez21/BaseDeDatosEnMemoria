@@ -167,15 +167,21 @@ public class BDEnMemoria {
         if (metaBaseDeDatos == null || metaBaseDeDatos.isEmpty()) {
             metaBaseDeDatos = new ArrayList<>();
         }
-        Registro r = new Registro();
-        r.setODatos(obj);
-        r.setId(metaBaseDeDatos.size());
-        r.setSNombreTabla(String.valueOf(obj.getClass().getSimpleName().toLowerCase()));
-        metaBaseDeDatos.add(r);
-        return BDEnMemoria.OPERACION_OK + " (" + "Insert de " + obj.getClass().getSimpleName() + ")";
+
+        Registro r = this.buscar(obj);
+        if (r == null) {
+            r = new Registro();
+            r.setODatos(obj);
+            r.setId(metaBaseDeDatos.size());
+            r.setSNombreTabla(String.valueOf(obj.getClass().getSimpleName().toLowerCase()));
+            metaBaseDeDatos.add(r);
+            return BDEnMemoria.OPERACION_OK + " (" + "Insert de " + obj.getClass().getSimpleName() + ")";
+        } else {
+            return BDEnMemoria.OPERACION_ERROR + " (" + "Insert de " + obj.getClass().getSimpleName() + ")";
+        }
     }
-    
-        /**
+
+    /**
      * Borra un Objeto de la Base de Datos en Memoria
      *
      * @see maf.bdmem.BDEnMemoria
@@ -250,7 +256,6 @@ public class BDEnMemoria {
         return null;
     }
 
-    
     /**
      * Busca un Objeto de la Base de Datos en Memoria
      *
@@ -389,8 +394,9 @@ public class BDEnMemoria {
 
     /**
      * Método que convierte un grupo de Registros en una tabla
+     *
      * @param tabla Tabla que mostrará los resultados
-     * @param registros Registros de tipo {@link maf.bdmem.Registro}, con los 
+     * @param registros Registros de tipo {@link maf.bdmem.Registro}, con los
      * datos a mostrar.
      */
     public static void registrosATabla(JTable tabla, ArrayList<Registro> registros) {
