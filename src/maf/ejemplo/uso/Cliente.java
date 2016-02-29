@@ -3,7 +3,7 @@
  * La edición de la presente clase, sin expresa autorización
  * no esta permitida.
  */
-package maf.prueba.uso;
+package maf.ejemplo.uso;
 
 /**
  * Abstraccion de un "Cliente", para poder hacer pruebas con la Base de Datos

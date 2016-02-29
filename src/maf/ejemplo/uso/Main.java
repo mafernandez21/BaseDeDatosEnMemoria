@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package maf.prueba.uso;
+package maf.ejemplo.uso;
 
 import java.awt.Color;
 import javax.swing.JFrame;
@@ -44,6 +44,6 @@ public class Main {
         p.add(s);
         f.add(p);
         f.setVisible(true);
-        //f.pack();
+        f.pack();
     }
 }
