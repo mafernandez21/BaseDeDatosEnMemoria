@@ -14,12 +14,12 @@ import java.util.Objects;
  *
  * @author Martín Alejandro Fernández
  * <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
- * @version 1.0
+ * @version 1.1
  * @see maf.bdmem.BDEnMemoria
  */
 public class Registro {
 
-    //<editor-fold defaultstate="collapsed" desc="Miembros">
+    //<editor-fold defaultstate="collapsed" desc="Atributos">
     private int id;
     private String sNombreTabla;
     private Object oDatos;
@@ -35,6 +35,7 @@ public class Registro {
     }
 
     //</editor-fold>
+    
     //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
     public int getId() {
         return id;
@@ -81,7 +82,14 @@ public class Registro {
         this.setMetaDatos(this.oDatos.getClass());
         return this.valorColumnas[idx];
     }
-
+    
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="Funciones">
+    /**
+     * Método que extrae los metadatos del objeto que forma parte del registro
+     * @param clase Clase de la que el objetos es una instancia.
+     */
     private void setMetaDatos(Class clase) {
         Field atributos[] = clase.getDeclaredFields();
 
@@ -103,14 +111,13 @@ public class Registro {
 
     /**
      * Método sobreescrito para poder determinar la igualdad de dos objetos de
-     * tipo {@link maf.bdmem.Registro}. Se compara un código hash generado a
-     * partir de los valores de los miembros {@link maf.bdmem.Registro#id}, y
-     * {@link maf.bdmem.Registro#sNombreTabla}
+     * tipo {@link maf.bdmem.Registro}. Se compara en contenido del valor del 
+     * registro. El valor del registro se corresponde con los datos del objeto
+     * {@link maf.bdmem.Registro#getODatos()}.
      *
      * @param obj Es el Objeto a ser comparado
-     * @return VERDADERO - Si los códigos hash son idénticos, caso contrario
-     * devuelve FALSO
-     * @see maf.bdmem.Registro#hashCode()
+     * @return VERDADERO - Si el objeto comparado es igual al almacenado en un 
+     * registro dentro de la BD. Caso contrario devuelve FALSO
      * @see <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
      */
     @Override
@@ -126,7 +133,9 @@ public class Registro {
     /**
      * Método sobreescrito para generar un código hash a partir de los valores
      * de los miembros {@link maf.bdmem.Registro#id}, y
-     * {@link maf.bdmem.Registro#sNombreTabla}
+     * {@link maf.bdmem.Registro#sNombreTabla}. Se puede usar para determinar si
+     * dos registros son iguales, independientemente del objeto contenido en el 
+     * registro
      *
      * @return Entero que representa un código hash
      * @see <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
@@ -139,4 +148,5 @@ public class Registro {
         return hash;
     }
     //</editor-fold>
+    
 }

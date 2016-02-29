@@ -86,7 +86,7 @@ import javax.swing.table.DefaultTableModel;
  * </ul>
  *
  * @author Martín Alejandro Fernández
- * @version 1.0
+ * @version 1.1
  * @see <a href="mailto://mafernandez21@hotmail.com">Contacto</a>
  */
 public class BDEnMemoria {
@@ -145,7 +145,7 @@ public class BDEnMemoria {
     }
     //</editor-fold>
 
-    //<editor-fold defaultstate="collapsed" desc="Getters and Setters">
+    //<editor-fold defaultstate="collapsed" desc="Funciones">
     /**
      * Elimina todos los registros de la Base de Datos en Memoria, destruyendo
      * la referencia a los datos
@@ -390,8 +390,7 @@ public class BDEnMemoria {
         }
         return sNombreTablas.size();
     }
-    //</editor-fold>
-
+    
     /**
      * Método que convierte un grupo de Registros en una tabla
      *
@@ -420,4 +419,5 @@ public class BDEnMemoria {
             modelo.addRow(fila);
         }
     }
+    //</editor-fold>
 }
